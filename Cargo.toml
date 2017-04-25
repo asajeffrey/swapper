@@ -1,6 +1,6 @@
 [package]
 name = "swapper"
-version = "0.0.1"
+version = "0.0.2"
 authors = ["ajeffrey@mozilla.com"]
 repository = "https://github.com/asajeffrey/swapper"
 documentation = "https://docs.rs/swapper"
