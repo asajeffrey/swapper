@@ -1,5 +1,6 @@
 use std::mem;
 use std::ptr;
+use std::sync::Arc;
 use std::sync::atomic::AtomicPtr;
 use std::sync::atomic::Ordering;
 use std::sync::mpsc;
@@ -116,23 +117,12 @@ use std::sync::mpsc::SendError;
 /// ```
 
 pub struct Swapper<T> {
-    contents: AtomicPtr<T>,
+    contents: Arc<AtomicPtr<T>>,
     wait: Receiver<()>,
     notify: Sender<()>,
 }
 
 impl<T> Swapper<T> {
-    // Create a new `Swapper`.
-    // NOTE: this is unsafe, since it makes the notify channel public,
-    // which could result in the waiting thread being woken up during
-    // a `mem::swap` of the contents.
-    unsafe fn new(notify: Sender<()>, wait: Receiver<()>) -> Swapper<T> {
-        Swapper {
-            contents: AtomicPtr::default(),
-            notify: notify,
-            wait: wait,
-        }
-    }
     /// Swap data.
     ///
     /// If the other half of the swap pair is blocked waiting to swap, then it swaps ownership
@@ -161,10 +151,19 @@ impl<T> Swapper<T> {
 
 /// Create a new pair of swappers.
 pub fn swapper<T>() -> (Swapper<T>, Swapper<T>) {
+    let contents = Arc::new(AtomicPtr::new(ptr::null_mut()));
     let (notify_a, wait_a) = mpsc::channel();
     let (notify_b, wait_b) = mpsc::channel();
-    let swapper_a = unsafe { Swapper::new(notify_b, wait_a) };
-    let swapper_b = unsafe { Swapper::new(notify_a, wait_b) };
+    let swapper_a = Swapper {
+        contents: contents.clone(),
+        notify: notify_b,
+        wait: wait_a,
+    };
+    let swapper_b = Swapper {
+        contents: contents,
+        notify: notify_a,
+        wait: wait_b,
+    };
     (swapper_a, swapper_b)
 }
 
