@@ -3,6 +3,7 @@ name = "swapper"
 version = "0.0.1"
 authors = ["ajeffrey@mozilla.com"]
 repository = "https://github.com/asajeffrey/swapper"
+documentation = "https://docs.rs/swapper"
 description = "Swap ownership between threads"
 keywords = ["concurrency"]
 license = "MPL-2.0"
