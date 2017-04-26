@@ -175,16 +175,16 @@ pub fn swapper<T>() -> (Swapper<T>, Swapper<T>) {
 
 /// The error returned when a thread attempts to swap with a thread that has dropped its swapper.
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
-pub struct SwapError;
+pub struct SwapError(());
 
 impl From<RecvError> for SwapError {
     fn from(_: RecvError) -> SwapError {
-        SwapError
+        SwapError(())
     }
 }
 
 impl From<SendError<()>> for SwapError {
     fn from(_: SendError<()>) -> SwapError {
-        SwapError
+        SwapError(())
     }
 }
