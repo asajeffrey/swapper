@@ -125,7 +125,7 @@ pub struct Swapper<T> {
     notify: Sender<()>,
 }
 
-impl<T> Swapper<T> {
+impl<T: Send> Swapper<T> {
     /// Swap data.
     ///
     /// If the other half of the swap pair is blocked waiting to swap, then it swaps ownership
@@ -151,6 +151,9 @@ impl<T> Swapper<T> {
         }
     }
 }
+
+// Be explicit about implementing Send.
+unsafe impl<T: Send> Send for Swapper<T> {}
 
 /// Create a new pair of swappers.
 pub fn swapper<T>() -> (Swapper<T>, Swapper<T>) {
