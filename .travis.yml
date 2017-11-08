@@ -6,3 +6,9 @@ rust:
 matrix:
   allow_failures:
     - rust: nightly
+script:
+  # Make sure there's only one swapper crate in scope
+  - rm -rf target/debug/deps/*swapper*
+  - cargo build -vv
+  - cargo test
+  - rustdoc --test README.md

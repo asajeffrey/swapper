@@ -3,9 +3,11 @@ Swap ownership of data between threads in Rust.
 
 This crate allows threads to swap ownership of data without a transitory state where the thread owns nothing.
 
-```rust,skt-main
+```rust
+extern crate swapper;
+pub fn main() {
    let (ab, ba) = swapper::swapper();
-   thread::spawn(move || {
+   std::thread::spawn(move || {
       let mut a = String::from("hello");
       ab.swap(&mut a).unwrap();
       assert_eq!(a, "world");
@@ -13,4 +15,5 @@ This crate allows threads to swap ownership of data without a transitory state w
    let mut b = String::from("world");
    ba.swap(&mut b).unwrap();
    assert_eq!(b, "hello");
+}
 ```
